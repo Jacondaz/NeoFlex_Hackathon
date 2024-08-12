@@ -1,0 +1,192 @@
+openapi: 3.0.0
+info:
+  title: 'API для работы с календарем собеседований'
+  description: 'Сервис API, описанный в рамаках хакатона Neohack 2024' 
+  version: 1.0.0
+
+tags:
+  - name: briefings
+    description: 'Работа сo встречами'
+
+paths:
+  /briefings:
+      post:
+        summary: 'Создать встречу'
+        description: 'Метод отправляет данные для создания встречи'
+        tags:
+         - briefings
+        operationId: postBriefing
+        requestBody:
+          description: 'Атрибуты создаваемой встречи'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  briefingID:
+                    description: 'Идентификатор встречи'
+                    type: integer
+                    example: 24
+                  briefingName:
+                    description: 'Название встречи'
+                    type: string
+                    example: Техническое собеседование
+                  briefingDate:
+                    description: 'Дата встречи'
+                    type: string
+                    example: 2024/09/03
+                  briefingTime:
+                    description: 'Время встречи'
+                    type: string
+                    example: 15:00:00
+        responses:
+          '201':
+            description: 'OK, created'
+          '400':
+            description: 'Передан некорректный запрос'
+          '500':
+            description: 'Внутренняя ошибка сервера'
+
+  /briefings/{briefingID}:
+      patch:
+        tags:
+         - briefings
+        summary: 'Изменение даты и/или времени встречи'
+        description: 'Метод позволяет изменить дату и/или время встречи по ее идентификатору, переданному в `path`'
+        operationId: patchBriefingTime
+        parameters:
+          - name: briefingID
+            required: true
+            description: 'Идентификатор встречи для изменения времени и/или даты'
+            in: path
+            schema:
+              type: integer
+              example: '23'
+          - name: briefingTime
+            required: true
+            in: query
+            schema:
+              type: string
+              example: '17:00:00'
+          - name: briefingDate
+            required: true
+            in: query
+            schema:
+              type: string
+              example: '2024-09-04'
+            
+        responses:
+          '200':
+            description: 'OK, дата и/или время изменено'
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    briefingID:
+                      description: 'Идентификатор встречи'
+                      type: integer
+                      example: '23'
+                    briefingTime:
+                      description: 'Время встречи'
+                      type: string
+                      example: '17:00:00'
+                    briefingDate:
+                      description: 'Дата встречи'
+                      type: string
+                      example: '2024-09-04'
+                  
+          '400':
+            description: 'Передан некорректный запрос'
+          '404':
+            description: 'Встреча не найдена'
+          '500':
+            description: 'Внутренняя ошибка сервера'
+            
+  /users:
+    post:
+      tags:
+        - users
+      summary: 'Создание нового пользователя'
+      description: 'Метод отправляет данные для создания нового пользователя'
+      operationId: postUsers
+      requestBody:
+        description: 'Атрибуты создаваемого пользователя'
+        content:
+          application/json:
+            schema:
+                $ref: "#/components/schemas/GetUserRespose"
+      responses:
+        '201':
+          description: 'OK, created'
+        '400':
+          description: 'Передан некорректный запрос'
+        '500':
+          description: 'Внутренняя ошибка сервера'
+
+    get:
+      tags:
+        - goods
+      summary: 'Получаем информацию о пользователе по его логину'
+      description: 'Метод получает строку с информацией о пользователе по его логину'
+      operationId: getUser
+      parameters:
+          - name: userLogin
+            required: true
+            description: 'Логин пользователя'
+            in: query
+            schema:
+              type: string
+              example: 'ivanivanov'
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetUserRespose"
+        '400':
+          description: 'Передан некорректный запрос'
+        '404':
+          description: 'Пользователь не найден'
+        '500':
+          description: 'Внутренняя ошибка сервера'
+
+###КОМПОНЕНТЫ
+components:
+  schemas:
+    GetUserRespose:
+      description: 'Атрибуты пользователя'
+      required:
+        - goodsName
+        - goodsCat
+      type: object
+      properties:
+        userLogin:
+          description: 'Логин пользователя'
+          type: string
+          example: 'ivanivanov'
+        userPassword:
+          description: 'Пароль пользователя'
+          type: string
+          example: '1234!df'
+        userName:
+          description: 'Имя пользователя'
+          type: string
+          example: 'Иван'
+        userLastName:
+          description: 'Фамилия пользователя'
+          type: string
+          example: 'Иванов'
+        userFathersName:
+          description: 'Отчество пользователя'
+          type: string
+          example: 'Иванович'
+        userEmail:
+          description: 'E-mail пользователя'
+          type: string
+          example: 'ivanivanov@mail.ru'
+        userPhone:
+          description: 'Номер телефона пользователя'
+          type: string
+          example: '89376875900'
